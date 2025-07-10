@@ -1,7 +1,8 @@
 import express from "express";
-
-
 const router = express.Router();
+import prisma from "../db/index.js";
+
+
 
 //Add the routes here...
 router.get('/', async (req, res) => {
@@ -53,7 +54,65 @@ router.post('/', async (req, res) => {
         });
     }
 });
+// Define a PUT route for marking a todo as completed
+router.put("/:todoId/completed", async (req, res) => {
+  // Extract the `todoId` from the route parameter and convert it to a number
+  const todoId = Number(req.params.todoId);
 
+  try {
+    // Use Prisma to update the todo with the specified ID
+    const todo = await prisma.todo.update({
+      where: {
+        id: todoId,        // Match the todo based on its unique ID
+      },
+      data: {
+        completed: true,  // Update the `completed` field to `true`
+      },
+    });
+
+    // Respond with a success status and include the updated todo's ID
+    res.status(200).json({
+      success: true,
+      todo: todo.id,
+    });
+  } catch (e) {
+    // Handle any errors that occur during the update
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong, please try again later",
+    });
+  }
+});
+
+// Define a DELETE route for removing a todo by its ID
+router.delete("/:todoId", async (req, res) => {
+  // Extract the `todoId` from the route parameter and convert it to a number
+  const todoId = Number(req.params.todoId);
+
+  try {
+    // Use Prisma to delete the todo with the specified ID
+    await prisma.todo.delete({
+      where: {
+        id: todoId, // Match the todo based on its unique ID
+        completed: true,
+      },
+    });
+
+    // Respond with a success status and confirmation of the deletion
+    res.status(200).json({
+      success: true,
+      todo: todoId, // Return the deleted todo's ID for reference
+      completed: true,
+    });
+  } catch (e) {
+    // Handle any errors that occur during the deletion process
+    res.status(500).json({
+      success: false,
+      completed: false,
+      message: "Something went wrong, please try again later",
+    });
+  }
+});
 
 
 export default router;
