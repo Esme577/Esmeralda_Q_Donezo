@@ -3,23 +3,59 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import supabase from "../client";
 
+
+
+
+export default function Login() {
+  
+  const [alert, showAlert] = useState({
+  message: "",
+  show: false
+});
+//////////////////////////////////////  
+  const navigate = useNavigate();
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+  //The values param comes from the handleSubmit function in useForm.
+  //It takes the values from the form and puts it in this function so we have access
+  const loginUser = async (values) => {
+    // Call Supabase's signInWithPassword method to log in with the provided values (email and password)
+    const { error } = await supabase.auth.signInWithPassword(values);
+
+    // Check if there was an error during login
+    if (error) {
+      // If there's an error, show an alert with the error message
+      showAlert({
+        show: true, // Display the alert
+        message: error.message, // Show the error message from the Supabase response
+      });
+    } else {
+      // If login is successful, navigate the user to the "/todos" page
+      navigate("/todos");
+    }
+  };
+
+////////////////////////////////////////////////////////////////////////////////
+
 function LoginForm() {
     return (
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit(loginUser)}>
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-          <input id="email" type="email" className="input input-bordered w-full" />
+          <input id="email" type="email" className="input input-bordered w-full" { ...register("email") }        />
         </div>
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-          <input id="password" type="password" className="input input-bordered w-full" />
+          <input id="password" type="password" className="input input-bordered w-full"  { ...register("password") } />
         </div>
         <button type="submit" className="btn btn-primary w-full">Login</button>
       </form>
     )
 }
-export default function Login() {
-  
 
 
   return (
