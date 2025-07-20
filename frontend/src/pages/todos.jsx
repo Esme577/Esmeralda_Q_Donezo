@@ -17,6 +17,17 @@ const toggleNewTodoModal = () => {
  }
 }
 
+const { register, handleSubmit } = useForm({ 
+  defaultValues: { 
+    name: "", 
+    description: "" 
+  } 
+});
+
+const handleNewTodo = (values) => {
+  toggleNewTodoModal();
+}
+
 
 function NewTodoButton({ toggleNewTodoModal}){
   return (
@@ -31,7 +42,7 @@ function TodoModal ({ modalRef}) {
      <dialog ref={modalRef} className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg">New Todo</h3>
-          <form>
+          <form onSubmit={handleSubmit(handleNewTodo)} >
             <label className="form-control w-full">
               <div className="label">
                 <span className="label-text">Name of Todo</span>
@@ -40,6 +51,7 @@ function TodoModal ({ modalRef}) {
                 type="text"
                 placeholder="Type here"
                 className="input input-bordered w-full"
+                {...register("name")}
               />
             </label>
             <label className="form-control w-full">
@@ -50,6 +62,7 @@ function TodoModal ({ modalRef}) {
                 type="text"
                 placeholder="Type here"
                 className="input input-bordered w-full"
+                {...register("description")}
               />
             </label>
             <div className="modal-action">
