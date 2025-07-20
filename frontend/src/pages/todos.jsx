@@ -1,12 +1,31 @@
 import { useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import getAxiosClient from "../axios-instance";
+import axios from "axios";
 
 export default function Todos(){
 
 const modalRef = useRef();
 
+const { mutate: createNewTodo } = useMutation({
+	  // The key used to identify this mutation in React Query's cache
+	  mutationKey: ["newTodo"],
+	
+	  // The function that performs the mutation (i.e., creating a new to-do)
+	  mutationFn: async (newTodo) => {
+	    const axiosInstance = await getAxiosClient();
+	
+	    // Use the Axios instance to make a POST request to the server, sending the new to-do data
+	    const { data } = await axiosInstance.post("http://localhost:8080/todos", newTodo);
+	
+	    // Return the response data (e.g., the newly created to-do object)
+	    return data;
+	  },
+  });
+
 const toggleNewTodoModal = () => {
+  console.log("modalaction", modalRef.current)
   // Check if the modal is currently open by accessing the `open` property of `modalRef`.
  if (modalRef.current.open) {
   // If the modal is open, close it by calling the `close()` method.
@@ -25,6 +44,7 @@ const { register, handleSubmit } = useForm({
 });
 
 const handleNewTodo = (values) => {
+  createNewTodo(values)
   toggleNewTodoModal();
 }
 
@@ -83,8 +103,8 @@ function TodoModal ({ modalRef}) {
 
   return (
     <> 
-    <NewTodoButton toggleNewTodoModal={toggleNewTodoModal}/>
-    <TodoModal />
+    <NewTodoButton toggleNewTodoModal={toggleNewTodoModal} />
+    <TodoModal modalRef={modalRef} />
     </>
   )
   
