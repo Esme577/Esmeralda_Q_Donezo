@@ -9,6 +9,30 @@ export default function Todos(){
 const modalRef = useRef();
 const queryClient = useQueryClient();
 
+const { register, handleSubmit } = useForm({ 
+  defaultValues: { 
+    name: "", 
+    description: "" 
+  } 
+});
+
+const { data, isError, isLoading } = useQuery({
+  // A unique key to identify this query in React Query's cache
+  queryKey: ["todos"],
+
+  // The function responsible for fetching the data
+  queryFn: async () => {
+    const axiosInstance = await getAxiosClient();
+    console.log("Headers being sent:", axiosInstance.defaults.headers);
+
+    // Use the Axios instance to send a GET request to fetch the list of todos
+    const { data } = await axiosInstance.get("http://localhost:8080/todos");
+
+    // Return the fetched data (React Query will cache it under the queryKey)
+    return data;
+  },
+});
+
 const { mutate: createNewTodo } = useMutation({
 	  // The key used to identify this mutation in React Query's cache
 	  mutationKey: ["newTodo"],
@@ -24,6 +48,7 @@ const { mutate: createNewTodo } = useMutation({
 	    return data;
 	  },
   });
+
 const { mutate: markAsCompleted } = useMutation({
   mutationKey: ["markAsCompleted"],
   mutationFn: async (todoId) => {
@@ -38,23 +63,6 @@ const { mutate: markAsCompleted } = useMutation({
   }
 });
   
-
-const { data, isError, isLoading } = useQuery({
-  // A unique key to identify this query in React Query's cache
-  queryKey: ["todos"],
-
-  // The function responsible for fetching the data
-  queryFn: async () => {
-    const axiosInstance = await getAxiosClient();
-
-    // Use the Axios instance to send a GET request to fetch the list of todos
-    const { data } = await axiosInstance.get("http://localhost:8080/todos");
-
-    // Return the fetched data (React Query will cache it under the queryKey)
-    return data;
-  },
-});
-
   if(isLoading){
     return (
       <div>Loading Todos...</div>
@@ -80,12 +88,7 @@ const toggleNewTodoModal = () => {
  }
 }
 
-const { register, handleSubmit } = useForm({ 
-  defaultValues: { 
-    name: "", 
-    description: "" 
-  } 
-});
+
 
 const handleNewTodo = (values) => {
   createNewTodo(values)
