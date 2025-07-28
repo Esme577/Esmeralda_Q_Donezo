@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import getAxiosClient from "../axios-instance";
 import axios from "axios";
 
+
+
 export default function Todos(){
 
 const modalRef = useRef();
@@ -162,12 +164,12 @@ function TodoItemList ({data, markAsCompleted}){
               </div>
               <div className="w-md">
                 <label className="swap">
-                  <input type="checkbox" onClick={() => markAsCompleted(todo.id)} />
+                  <input type="checkbox" checked={todo.completed} onClick={() => markAsCompleted(todo.id)} />
                   <div className="swap-on">
-                    Yes
+                    Completed
                   </div>
                   <div className="swap-off">
-                    No
+                    Not Completed
                   </div>
                 </label>
               </div>
