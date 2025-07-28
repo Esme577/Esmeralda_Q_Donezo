@@ -149,7 +149,7 @@ function TodoModal ({ modalRef}) {
 function TodoItemList ({data, markAsCompleted}){
   return (
   <div className="w-lg h-sm flex column items-center justify-center gap-4">
-    {data.success && data.todos && data.todos.length >= 1 && (
+    {data.success && data.todos && data.todos.length >= 1  ? (
       <ul className="flex column items-center justify-center gap-4">
         {
           data.todos.map(todo => (
@@ -175,7 +175,7 @@ function TodoItemList ({data, markAsCompleted}){
           ))
         }
       </ul>
-    )}</div>
+    ): ("data not found")} </div>
 )
 }
 
